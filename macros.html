@@ -1,440 +1,73 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>macros</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0f0f0e; --surface: #1a1a18; --surface2: #242422;
-    --border: #2e2e2b; --accent: #c8f060; --accent2: #f0a830;
-    --accent3: #60c8f0; --text: #f0ede6; --text2: #8a8778; --danger: #f06060;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body {
-    background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace;
-    min-height: 100dvh; max-width: 430px; margin: 0 auto; padding-bottom: 280px;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catálogo Safari Indoor</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  /* HEADER */
-  .header {
-    padding: 20px 20px 14px; border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; background: var(--bg); z-index: 10;
-  }
-  .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
-  .app-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
-  .app-title span { color: var(--accent); }
-  .date-label { font-size: 10px; color: var(--text2); text-align: right; line-height: 1.7; }
+    body {
+      background: #0d0d0d;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-  .progress-section { display: flex; align-items: center; gap: 16px; }
-  .ring-wrap { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
-  .ring-wrap svg { transform: rotate(-90deg); }
-  .ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .ring-kcal { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; line-height: 1; }
-  .ring-label { font-size: 8px; color: var(--text2); margin-top: 1px; }
-  .macro-bars { flex: 1; display: flex; flex-direction: column; gap: 7px; }
-  .macro-bar-row { display: flex; align-items: center; gap: 8px; font-size: 10px; }
-  .macro-bar-label { width: 18px; color: var(--text2); }
-  .macro-bar-track { flex: 1; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
-  .macro-bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
-  .macro-bar-val { width: 36px; text-align: right; color: var(--text2); }
-  .kcal-remaining { font-size: 9px; color: var(--text2); margin-top: 3px; }
-  .kcal-remaining.over { color: var(--danger); }
+    header {
+      background: #1a1a1a;
+      border-bottom: 2px solid #c8a84b;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-  /* MEALS */
-  .section-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px 8px; }
-  .section-title { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text2); }
+    header h1 {
+      color: #c8a84b;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
 
-  .meal-block { margin: 0 12px 8px; background: var(--surface); border-radius: 14px; border: 1px solid var(--border); overflow: hidden; }
-  .meal-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; cursor: pointer; user-select: none; }
-  .meal-name-row { display: flex; align-items: center; gap: 10px; }
-  .meal-icon { width: 30px; height: 30px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
-  .meal-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; }
-  .meal-sub { font-size: 9px; color: var(--text2); margin-top: 1px; }
-  .meal-toggle { font-size: 10px; color: var(--text2); transition: transform 0.2s; }
-  .meal-toggle.open { transform: rotate(180deg); }
-  .meal-entries { display: none; }
-  .meal-entries.open { display: block; }
-  .entry-row { display: flex; align-items: center; padding: 8px 14px; border-top: 1px solid var(--border); gap: 8px; }
-  .entry-name { font-size: 11px; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .entry-macros { display: flex; gap: 6px; flex-shrink: 0; }
-  .entry-macro { display: flex; flex-direction: column; align-items: center; }
-  .entry-macro .ev { font-size: 10px; }
-  .entry-macro .el { font-size: 8px; color: var(--text2); }
-  .entry-delete { background: none; border: none; color: var(--text2); cursor: pointer; font-size: 18px; padding: 0; line-height: 1; flex-shrink: 0; }
-  .entry-delete:active { color: var(--danger); }
-  .meal-add-btn {
-    width: 100%; background: none; border: none; border-top: 1px solid var(--border);
-    color: var(--text2); font-family: 'DM Mono', monospace; font-size: 11px;
-    padding: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
-  }
-  .meal-add-btn:active { color: var(--accent); }
+    header a {
+      color: #c8a84b;
+      text-decoration: none;
+      font-size: 0.85rem;
+      border: 1px solid #c8a84b;
+      padding: 6px 14px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
 
-  /* BOTTOM PANEL */
-  .input-panel {
-    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 100%; max-width: 430px; background: var(--surface);
-    border-top: 1px solid var(--border); padding: 12px 16px 24px; z-index: 20;
-  }
-  .panel-title { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text2); margin-bottom: 10px; }
-  .meal-selector { display: flex; gap: 6px; margin-bottom: 10px; }
-  .meal-sel-btn {
-    flex: 1; background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 8px; color: var(--text2); font-family: 'DM Mono', monospace;
-    font-size: 9px; padding: 6px 2px; cursor: pointer; text-align: center;
-    text-transform: uppercase; letter-spacing: 0.5px;
-  }
-  .meal-sel-btn.active { border-color: var(--accent2); color: var(--accent2); }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 9px; }
-  .form-field label { display: block; font-size: 9px; color: var(--text2); margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .form-field.full { grid-column: 1 / -1; }
-  .form-input {
-    width: 100%; background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 9px; color: var(--text); font-family: 'DM Mono', monospace;
-    font-size: 13px; padding: 9px 11px; outline: none; -webkit-appearance: none;
-  }
-  .form-input:focus { border-color: var(--accent); }
-  .add-btn {
-    width: 100%; background: var(--accent); border: none; border-radius: 11px;
-    color: #0f0f0e; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
-    padding: 12px; cursor: pointer;
-  }
-  .add-btn:active { opacity: 0.8; }
+    header a:hover {
+      background: #c8a84b;
+      color: #0d0d0d;
+    }
 
-  /* TOAST */
-  .toast {
-    position: fixed; top: 76px; left: 50%; transform: translateX(-50%) translateY(-16px);
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 10px; padding: 9px 16px; font-size: 11px;
-    opacity: 0; transition: all 0.25s; z-index: 30; white-space: nowrap; pointer-events: none;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .toast.ok { border-color: var(--accent); color: var(--accent); }
-  .toast.err { border-color: var(--danger); color: var(--danger); }
-
-  /* HISTORY */
-  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 40; align-items: flex-end; justify-content: center; }
-  .overlay.open { display: flex; }
-  .modal { background: var(--surface); border-radius: 20px 20px 0 0; border: 1px solid var(--border); width: 100%; max-width: 430px; max-height: 72dvh; display: flex; flex-direction: column; padding-bottom: 24px; }
-  .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px 12px; border-bottom: 1px solid var(--border); }
-  .modal-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; }
-  .modal-close { background: none; border: none; color: var(--text2); font-size: 22px; cursor: pointer; line-height: 1; }
-  .modal-body { overflow-y: auto; padding: 12px 16px; }
-  .history-day { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; border: 1px solid var(--border); }
-  .history-day-date { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; margin-bottom: 6px; color: var(--text2); }
-  .history-day-stats { display: flex; gap: 14px; font-size: 10px; }
-  .history-empty { text-align: center; color: var(--text2); font-size: 11px; padding: 24px; }
-
-  .hist-btn {
-    background: none; border: 1px solid var(--border); border-radius: 8px;
-    color: var(--text2); font-family: 'DM Mono', monospace; font-size: 10px;
-    padding: 5px 10px; cursor: pointer;
-  }
-
-  ::-webkit-scrollbar { width: 3px; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-</style>
+    iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+    }
+  </style>
 </head>
 <body>
 
-<div class="toast" id="toast"></div>
+  <header>
+    <h1>Catálogo de Productos — Safari Indoor</h1>
+    <a href="https://drive.google.com/uc?export=download&id=1zLgM8SwObx2zT7SlPV3oZXzYvGnwp0hi" target="_blank">
+      ⬇ Descargar PDF
+    </a>
+  </header>
 
-<!-- HISTORY MODAL -->
-<div class="overlay" id="overlay" onclick="if(event.target===this)closeHistory()">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Historial</div>
-      <button class="modal-close" onclick="closeHistory()">×</button>
-    </div>
-    <div class="modal-body" id="historyBody"></div>
-  </div>
-</div>
+  <iframe
+    src="https://drive.google.com/file/d/1zLgM8SwObx2zT7SlPV3oZXzYvGnwp0hi/preview"
+    allow="autoplay"
+    loading="lazy"
+  ></iframe>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="header-top">
-    <div>
-      <div class="app-title">ma<span>c</span>ros</div>
-      <div style="font-size:9px;color:var(--text2);margin-top:2px">meta: 1,650 kcal/día</div>
-    </div>
-    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
-      <div class="date-label" id="dateLabel"></div>
-      <button class="hist-btn" onclick="openHistory()">historial</button>
-    </div>
-  </div>
-  <div class="progress-section">
-    <div class="ring-wrap">
-      <svg width="72" height="72" viewBox="0 0 72 72">
-        <circle cx="36" cy="36" r="30" fill="none" stroke="var(--border)" stroke-width="6"/>
-        <circle id="ringCircle" cx="36" cy="36" r="30" fill="none" stroke="var(--accent)"
-          stroke-width="6" stroke-linecap="round" stroke-dasharray="188.5" stroke-dashoffset="188.5"
-          style="transition:stroke-dashoffset 0.5s ease,stroke 0.3s"/>
-      </svg>
-      <div class="ring-center">
-        <div class="ring-kcal" id="ringKcal">0</div>
-        <div class="ring-label">kcal</div>
-      </div>
-    </div>
-    <div class="macro-bars">
-      <div class="macro-bar-row">
-        <div class="macro-bar-label">P</div>
-        <div class="macro-bar-track"><div class="macro-bar-fill" id="barP" style="background:var(--accent3);width:0%"></div></div>
-        <div class="macro-bar-val" id="valP">0g</div>
-      </div>
-      <div class="macro-bar-row">
-        <div class="macro-bar-label">C</div>
-        <div class="macro-bar-track"><div class="macro-bar-fill" id="barC" style="background:var(--accent2);width:0%"></div></div>
-        <div class="macro-bar-val" id="valC">0g</div>
-      </div>
-      <div class="macro-bar-row">
-        <div class="macro-bar-label">G</div>
-        <div class="macro-bar-track"><div class="macro-bar-fill" id="barG" style="background:var(--danger);width:0%"></div></div>
-        <div class="macro-bar-val" id="valG">0g</div>
-      </div>
-      <div class="kcal-remaining" id="kcalRem">1,650 restantes</div>
-    </div>
-  </div>
-</div>
-
-<!-- MEALS LIST -->
-<div class="section-header">
-  <div class="section-title">Hoy</div>
-  <div style="font-size:9px;color:var(--text2)" id="entryCount">0 registros</div>
-</div>
-<div id="mealsContainer"></div>
-
-<!-- INPUT PANEL -->
-<div class="input-panel">
-  <div class="panel-title">Agregar alimento</div>
-  <div class="meal-selector" id="mealSel"></div>
-  <div class="form-grid">
-    <div class="form-field full">
-      <label>Nombre</label>
-      <input class="form-input" id="fName" placeholder="ej: pechuga a la plancha" autocomplete="off" autocorrect="off">
-    </div>
-    <div class="form-field">
-      <label>Calorías</label>
-      <input class="form-input" id="fKcal" type="number" inputmode="decimal" placeholder="0">
-    </div>
-    <div class="form-field">
-      <label>Proteína g</label>
-      <input class="form-input" id="fP" type="number" inputmode="decimal" placeholder="0">
-    </div>
-    <div class="form-field">
-      <label>Carbos g</label>
-      <input class="form-input" id="fC" type="number" inputmode="decimal" placeholder="0">
-    </div>
-    <div class="form-field">
-      <label>Grasas g</label>
-      <input class="form-input" id="fG" type="number" inputmode="decimal" placeholder="0">
-    </div>
-  </div>
-  <button class="add-btn" onclick="addEntry()">Agregar</button>
-</div>
-
-<script>
-const META_KCAL = 1650, META_P = 130, META_C = 200, META_G = 55;
-const MEALS = [
-  { id:'desayuno', name:'Desayuno', icon:'☀️', color:'#f0a830' },
-  { id:'comida',   name:'Comida',   icon:'🍽️', color:'#60c8f0' },
-  { id:'cena',     name:'Cena',     icon:'🌙', color:'#c060f0' },
-  { id:'snack',    name:'Snack',    icon:'🥜', color:'#60f0a8' },
-];
-const DAYS   = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
-const MONTHS = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-
-let activeMeal = 'desayuno';
-
-const todayKey = () => new Date().toISOString().slice(0,10);
-
-function loadDay(k) {
-  try { return JSON.parse(localStorage.getItem('md_'+k)||'[]'); } catch { return []; }
-}
-function saveDay(k, arr) {
-  localStorage.setItem('md_'+k, JSON.stringify(arr));
-  let idx = JSON.parse(localStorage.getItem('md_index')||'[]');
-  if (!idx.includes(k)) { idx.unshift(k); idx = idx.slice(0,90); }
-  localStorage.setItem('md_index', JSON.stringify(idx));
-}
-
-let entries = loadDay(todayKey());
-
-// Date label
-const d = new Date();
-document.getElementById('dateLabel').innerHTML =
-  `${DAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}<br>${d.getFullYear()}`;
-
-// Meal selector
-function renderMealSel() {
-  document.getElementById('mealSel').innerHTML = MEALS.map(m =>
-    `<button class="meal-sel-btn ${activeMeal===m.id?'active':''}" onclick="setMeal('${m.id}')">${m.icon} ${m.name}</button>`
-  ).join('');
-}
-function setMeal(id) { activeMeal = id; renderMealSel(); }
-renderMealSel();
-
-// Render meals list
-function render() {
-  const c = document.getElementById('mealsContainer');
-  document.getElementById('entryCount').textContent =
-    `${entries.length} registro${entries.length!==1?'s':''}`;
-
-  c.innerHTML = MEALS.map(meal => {
-    const me = entries.filter(e => e.meal === meal.id);
-    const mk = me.reduce((s,e) => s+e.kcal, 0);
-    const isOpen = me.length > 0;
-    return `
-    <div class="meal-block">
-      <div class="meal-header" onclick="toggleMeal('en-${meal.id}','tg-${meal.id}')">
-        <div class="meal-name-row">
-          <div class="meal-icon" style="background:${meal.color}22">${meal.icon}</div>
-          <div>
-            <div class="meal-name">${meal.name}</div>
-            <div class="meal-sub">${me.length>0
-              ? mk+' kcal · '+me.length+' alimento'+(me.length!==1?'s':'')
-              : 'sin registros'}</div>
-          </div>
-        </div>
-        <div class="meal-toggle ${isOpen?'open':''}" id="tg-${meal.id}">▼</div>
-      </div>
-      <div class="meal-entries ${isOpen?'open':''}" id="en-${meal.id}">
-        ${me.length===0
-          ? '<div style="padding:12px 14px;font-size:10px;color:var(--text2)">vacío</div>'
-          : me.map(e => {
-              const gi = entries.indexOf(e);
-              return `<div class="entry-row">
-                <div class="entry-name">${e.name}</div>
-                <div class="entry-macros">
-                  <div class="entry-macro"><span class="ev">${e.kcal}</span><span class="el">kcal</span></div>
-                  <div class="entry-macro"><span class="ev" style="color:var(--accent3)">${e.p}g</span><span class="el">P</span></div>
-                  <div class="entry-macro"><span class="ev" style="color:var(--accent2)">${e.c}g</span><span class="el">C</span></div>
-                  <div class="entry-macro"><span class="ev" style="color:var(--danger)">${e.g}g</span><span class="el">G</span></div>
-                </div>
-                <button class="entry-delete" onclick="del(${gi})">×</button>
-              </div>`;
-            }).join('')
-        }
-        <button class="meal-add-btn" onclick="focusMeal('${meal.id}')">+ agregar a ${meal.name}</button>
-      </div>
-    </div>`;
-  }).join('');
-
-  updateTotals();
-}
-
-function toggleMeal(eid, tid) {
-  document.getElementById(eid).classList.toggle('open');
-  document.getElementById(tid).classList.toggle('open');
-}
-
-function focusMeal(id) {
-  activeMeal = id; renderMealSel();
-  document.getElementById('fName').focus();
-}
-
-function updateTotals() {
-  const t = entries.reduce((s,e) =>
-    ({kcal:s.kcal+e.kcal, p:s.p+e.p, c:s.c+e.c, g:s.g+e.g}),
-    {kcal:0,p:0,c:0,g:0});
-
-  document.getElementById('ringKcal').textContent = t.kcal;
-  const pct = Math.min(t.kcal/META_KCAL, 1);
-  document.getElementById('ringCircle').style.strokeDashoffset = 188.5 - pct*188.5;
-  document.getElementById('ringCircle').style.stroke =
-    t.kcal > META_KCAL ? 'var(--danger)' : 'var(--accent)';
-
-  document.getElementById('barP').style.width = Math.min(t.p/META_P*100,100)+'%';
-  document.getElementById('barC').style.width = Math.min(t.c/META_C*100,100)+'%';
-  document.getElementById('barG').style.width = Math.min(t.g/META_G*100,100)+'%';
-  document.getElementById('valP').textContent = t.p+'g';
-  document.getElementById('valC').textContent = t.c+'g';
-  document.getElementById('valG').textContent = t.g+'g';
-
-  const rem = META_KCAL - t.kcal;
-  const el = document.getElementById('kcalRem');
-  el.textContent = rem >= 0
-    ? `${rem.toLocaleString('es-MX')} restantes`
-    : `${Math.abs(rem)} sobre la meta`;
-  el.className = 'kcal-remaining' + (rem < 0 ? ' over' : '');
-}
-
-function addEntry() {
-  const name = document.getElementById('fName').value.trim();
-  const kcal = Math.round(parseFloat(document.getElementById('fKcal').value)||0);
-  const p    = Math.round(parseFloat(document.getElementById('fP').value)||0);
-  const c    = Math.round(parseFloat(document.getElementById('fC').value)||0);
-  const g    = Math.round(parseFloat(document.getElementById('fG').value)||0);
-
-  if (!name) { showToast('Escribe el nombre','err'); return; }
-  if (!kcal) { showToast('Ingresa las calorías','err'); return; }
-
-  entries.push({meal:activeMeal, name, kcal, p, c, g});
-  saveDay(todayKey(), entries);
-  render();
-  ['fName','fKcal','fP','fC','fG'].forEach(id => document.getElementById(id).value='');
-  document.getElementById('fName').focus();
-  showToast('✓ '+name+' agregado','ok');
-}
-
-document.getElementById('fG').addEventListener('keydown', e => {
-  if (e.key==='Enter') addEntry();
-});
-
-function del(idx) {
-  entries.splice(idx,1);
-  saveDay(todayKey(), entries);
-  render();
-}
-
-let toastT;
-function showToast(msg, type='') {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.className = `toast show ${type}`;
-  clearTimeout(toastT);
-  toastT = setTimeout(() => el.className='toast', 2500);
-}
-
-function openHistory() {
-  const idx = JSON.parse(localStorage.getItem('md_index')||'[]');
-  const body = document.getElementById('historyBody');
-
-  if (!idx.length) {
-    body.innerHTML = '<div class="history-empty">Sin historial aún</div>';
-  } else {
-    body.innerHTML = idx.map(key => {
-      const de = loadDay(key);
-      if (!de.length) return '';
-      const t = de.reduce((s,e) =>
-        ({kcal:s.kcal+e.kcal,p:s.p+e.p,c:s.c+e.c,g:s.g+e.g}),
-        {kcal:0,p:0,c:0,g:0});
-      const [y,m,dd] = key.split('-');
-      const dt = new Date(+y,+m-1,+dd);
-      const label = `${DAYS[dt.getDay()]} ${+dd} ${MONTHS[+m-1]} ${y}`;
-      const diff = META_KCAL - t.kcal;
-      const diffStr = diff >= 0
-        ? `<span style="color:var(--accent)">-${diff}</span>`
-        : `<span style="color:var(--danger)">+${Math.abs(diff)}</span>`;
-      return `<div class="history-day">
-        <div class="history-day-date">${label}</div>
-        <div class="history-day-stats">
-          <div><b>${t.kcal}</b> <span style="color:var(--text2)">kcal</span></div>
-          <div>${diffStr} <span style="color:var(--text2)">vs meta</span></div>
-          <div><b style="color:var(--accent3)">${t.p}g</b> <span style="color:var(--text2)">P</span></div>
-          <div><b style="color:var(--accent2)">${t.c}g</b> <span style="color:var(--text2)">C</span></div>
-          <div><b style="color:var(--danger)">${t.g}g</b> <span style="color:var(--text2)">G</span></div>
-        </div>
-      </div>`;
-    }).join('');
-  }
-  document.getElementById('overlay').classList.add('open');
-}
-
-function closeHistory() {
-  document.getElementById('overlay').classList.remove('open');
-}
-
-render();
-</script>
 </body>
 </html>
